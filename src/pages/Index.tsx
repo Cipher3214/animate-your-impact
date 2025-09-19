@@ -1,12 +1,21 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { CarbonCalculator } from '@/components/CarbonCalculator';
+import { CarbonData } from '@/types/carbonCalculator';
+import { toast } from '@/hooks/use-toast';
 
 const Index = () => {
+  const handleCalculatorComplete = (data: CarbonData, score: number) => {
+    toast({
+      title: "Assessment Complete!",
+      description: `Your carbon footprint: ${score} kg CO₂/day`,
+    });
+    
+    // Here you could save the data to a database or analytics service
+    console.log('Carbon footprint data:', data, 'Score:', score);
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen">
+      <CarbonCalculator onComplete={handleCalculatorComplete} />
     </div>
   );
 };
