@@ -7,11 +7,11 @@ import { PageTransition } from '@/components/animations/PageTransition';
 import { InteractiveTile } from '@/components/animations/MicroInteractions';
 
 // Import transport images
-import trainImg from '@/assets/transport-train.png';
-import busImg from '@/assets/transport-bus.png';
-import autoImg from '@/assets/transport-auto.png';
-import carImg from '@/assets/transport-car.png';
-import bikeImg from '@/assets/transport-bike.png';
+import trainImg from '@/assets/local.png';
+import busImg from '@/assets/best.png';
+import autoImg from '@/assets/auto.png';
+import carImg from '@/assets/cab.png';
+import bikeImg from '@/assets/bike.png';
 import walkCycleImg from '@/assets/transport-walk-cycle.png';
 
 interface TransportData {
@@ -127,14 +127,6 @@ export const TransportQuestion: React.FC<TransportQuestionProps> = ({
       animationTier={animationTier}
     >
       <div className="space-y-6">
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-foreground mb-2">
-            Daily Transport & Commute
-          </h2>
-          <p className="text-muted-foreground">
-            Select your modes of transport and daily distance
-          </p>
-        </div>
 
         {/* Transport Mode Selection */}
         <Card className="p-6">
@@ -228,26 +220,7 @@ export const TransportQuestion: React.FC<TransportQuestionProps> = ({
         </Card>
       )}
 
-      {/* Real-time Animation Background */}
-      <Card className="p-8 bg-gradient-to-r from-accent/5 to-primary/5">
-        <div className="text-center">
-          <div className={`inline-flex items-center justify-center w-24 h-24 rounded-full mb-4 ${getTierClassName(animationTier)} pulse-eco`}>
-            <span className="text-2xl font-bold">
-              {animationTier === AnimationState.LOW && '🌱'}
-              {animationTier === AnimationState.MEDIUM && '⚡'}
-              {animationTier === AnimationState.HIGH && '🚨'}
-            </span>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Your transport emissions are <strong>{animationTier.toLowerCase()}</strong>
-            {data.selectedModes.includes('walk') && (
-              <span className="block text-success font-medium mt-1">
-                🌿 Great choice including walking/cycling!
-              </span>
-            )}
-          </p>
-        </div>
-      </Card>
+
       </div>
     </PageTransition>
   );
