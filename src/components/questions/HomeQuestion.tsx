@@ -4,6 +4,8 @@ import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { AnimationState } from '@/types/carbonCalculator';
 import { Home, Users } from 'lucide-react';
+import { PageTransition } from '@/components/animations/PageTransition';
+import { InteractiveTile } from '@/components/animations/MicroInteractions';
 
 interface HomeData {
   type: string;
@@ -46,7 +48,8 @@ export const HomeQuestion: React.FC<HomeQuestionProps> = ({
   };
 
   return (
-    <div className="space-y-6 slide-up">
+    <PageTransition backgroundType="home" animationTier={animationTier}>
+      <div className="space-y-6">
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-foreground mb-2">
           Home Type & Occupancy
@@ -63,17 +66,18 @@ export const HomeQuestion: React.FC<HomeQuestionProps> = ({
           Home Type
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {HOME_TYPES.map((homeType) => (
-            <Card
+          {HOME_TYPES.map((homeType, index) => (
+            <InteractiveTile
               key={homeType.id}
-              className={`transport-tile ${
-                data.type === homeType.id ? 'selected' : ''
-              }`}
+              isSelected={data.type === homeType.id}
               onClick={() => onChange({ ...data, type: homeType.id })}
+              animationTier={animationTier}
+              className="animate-slide-up"
+              style={{ animationDelay: `${index * 0.15}s` }}
             >
               <div className="text-center">
-                <div className="w-12 h-12 mx-auto mb-3 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <Home className="w-6 h-6 text-primary" />
+                <div className="w-12 h-12 mx-auto mb-3 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-200">
+                  <Home className="w-6 h-6 text-primary group-hover:scale-110 transition-transform duration-200" />
                 </div>
                 <h4 className="font-medium text-foreground mb-1">
                   {homeType.name}
@@ -85,7 +89,7 @@ export const HomeQuestion: React.FC<HomeQuestionProps> = ({
                   ~{homeType.area} sq ft
                 </Badge>
               </div>
-            </Card>
+            </InteractiveTile>
           ))}
         </div>
       </Card>
@@ -149,6 +153,7 @@ export const HomeQuestion: React.FC<HomeQuestionProps> = ({
           </p>
         </div>
       </Card>
-    </div>
+      </div>
+    </PageTransition>
   );
 };

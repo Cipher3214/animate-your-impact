@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { CarbonData, AnimationTiers, AnimationState } from '@/types/carbonCalculator';
 import { Leaf, Target, TrendingDown, Share2, RotateCcw } from 'lucide-react';
+import { PageTransition } from '@/components/animations/PageTransition';
+import { GlowButton } from '@/components/animations/MicroInteractions';
 
 interface ResultsScreenProps {
   carbonData: CarbonData;
@@ -38,6 +40,17 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
   };
 
   const scoreInfo = getScoreRating();
+  
+  // Calculate overall tier based on average of all categories
+  const overallTier = (() => {
+    const tiers = Object.values(animationTiers);
+    const highCount = tiers.filter(t => t === AnimationState.HIGH).length;
+    const lowCount = tiers.filter(t => t === AnimationState.LOW).length;
+    
+    if (highCount >= 2) return AnimationState.HIGH;
+    if (lowCount >= 3) return AnimationState.LOW;
+    return AnimationState.MEDIUM;
+  })();
 
   const getTierBadge = (tier: AnimationState) => {
     const className = tier === AnimationState.LOW ? 'tier-low' : 
@@ -54,7 +67,8 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
   ];
 
   return (
-    <div className="space-y-6 slide-up">
+    <PageTransition backgroundType="results" animationTier={overallTier}>
+      <div className="space-y-6">
       <div className="text-center mb-8">
         <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-primary mb-4">
           <Leaf className="w-10 h-10 text-primary-foreground" />
@@ -150,19 +164,23 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
       )}
 
       {/* Action Buttons */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Button
-          variant="outline"
-          onClick={onRestart}
-          className="flex items-center gap-2"
+      <div className="flex flex-wrap justify-center gap-4 pt-4">
+        <GlowButton 
+          variant="secondary"
+          onClick={onRestart || (() => window.location.reload())}
+          animationTier={overallTier}
         >
-          <RotateCcw className="w-4 h-4" />
-          Retake Assessment
-        </Button>
-        <Button className="flex items-center gap-2 bg-gradient-primary">
-          <Share2 className="w-4 h-4" />
+          <RotateCcw className="w-4 h-4 mr-2" />
+          Retake Quiz
+        </GlowButton>
+        
+        <GlowButton 
+          variant="primary"
+          animationTier={overallTier}
+        >
+          <Share2 className="w-4 h-4 mr-2" />
           Share Results
-        </Button>
+        </GlowButton>
       </div>
 
       {/* Fun Fact */}
@@ -179,6 +197,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
           </p>
         </div>
       </Card>
-    </div>
+      </div>
+    </PageTransition>
   );
 };

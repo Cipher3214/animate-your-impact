@@ -5,6 +5,7 @@ import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { AnimationState } from '@/types/carbonCalculator';
 import { Sun, Zap } from 'lucide-react';
+import { PageTransition } from '@/components/animations/PageTransition';
 
 interface SolarQuestionProps {
   hasSolar: boolean;
@@ -33,7 +34,8 @@ export const SolarQuestion: React.FC<SolarQuestionProps> = ({
   };
 
   return (
-    <div className="space-y-6 slide-up">
+    <PageTransition backgroundType="solar" animationTier={animationTier}>
+      <div className="space-y-6">
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-foreground mb-2">
           Solar Energy Usage
@@ -154,6 +156,7 @@ export const SolarQuestion: React.FC<SolarQuestionProps> = ({
           )}
         </div>
       </Card>
-    </div>
+      </div>
+    </PageTransition>
   );
 };

@@ -3,6 +3,8 @@ import { Card } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { AnimationState } from '@/types/carbonCalculator';
+import { PageTransition } from '@/components/animations/PageTransition';
+import { InteractiveTile } from '@/components/animations/MicroInteractions';
 
 // Import transport images
 import trainImg from '@/assets/transport-train.png';
@@ -25,12 +27,12 @@ interface TransportQuestionProps {
 }
 
 const TRANSPORT_MODES = [
-  { id: 'train', name: 'Local Train / Metro', image: trainImg, emissionFactor: 0.04 },
-  { id: 'bus', name: 'BEST Bus', image: busImg, emissionFactor: 0.08 },
-  { id: 'auto', name: 'Shared Auto/Cab', image: autoImg, emissionFactor: 0.15 },
-  { id: 'car', name: 'Private Car - Solo', image: carImg, emissionFactor: 0.25 },
-  { id: 'bike', name: 'Motorcycle', image: bikeImg, emissionFactor: 0.12 },
-  { id: 'walk', name: 'Walk / Cycle', image: walkCycleImg, emissionFactor: 0.0 },
+  { id: 'train', name: 'Local Train / Metro', icon: trainImg, emissionFactor: 0.04, description: 'Mass transit system' },
+  { id: 'bus', name: 'BEST Bus', icon: busImg, emissionFactor: 0.08, description: 'Public bus transport' },
+  { id: 'auto', name: 'Shared Auto/Cab', icon: autoImg, emissionFactor: 0.15, description: 'Shared ride service' },
+  { id: 'car', name: 'Private Car - Solo', icon: carImg, emissionFactor: 0.25, description: 'Personal vehicle' },
+  { id: 'bike', name: 'Motorcycle', icon: bikeImg, emissionFactor: 0.12, description: 'Two-wheeler' },
+  { id: 'walk', name: 'Walk / Cycle', icon: walkCycleImg, emissionFactor: 0.0, description: 'Zero emission' },
 ];
 
 export const TransportQuestion: React.FC<TransportQuestionProps> = ({
@@ -44,7 +46,7 @@ export const TransportQuestion: React.FC<TransportQuestionProps> = ({
     setShowDistribution(data.selectedModes.length > 1);
   }, [data.selectedModes.length]);
 
-  const handleModeToggle = (modeId: string) => {
+  const toggleMode = (modeId: string) => {
     const newSelectedModes = data.selectedModes.includes(modeId)
       ? data.selectedModes.filter(id => id !== modeId)
       : [...data.selectedModes, modeId];
@@ -120,42 +122,50 @@ export const TransportQuestion: React.FC<TransportQuestionProps> = ({
   };
 
   return (
-    <div className="space-y-6 slide-up">
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-foreground mb-2">
-          Daily Commute - Transport Modes
-        </h2>
-        <p className="text-muted-foreground">
-          Select your primary modes of transport and daily distance
-        </p>
-      </div>
+    <PageTransition 
+      backgroundType="transport" 
+      animationTier={animationTier}
+    >
+      <div className="space-y-6">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold text-foreground mb-2">
+            Daily Transport & Commute
+          </h2>
+          <p className="text-muted-foreground">
+            Select your modes of transport and daily distance
+          </p>
+        </div>
 
-      {/* Transport Mode Selection */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-        {TRANSPORT_MODES.map((mode) => (
-          <Card
-            key={mode.id}
-            className={`transport-tile ${
-              data.selectedModes.includes(mode.id) ? 'selected' : ''
-            }`}
-            onClick={() => handleModeToggle(mode.id)}
-          >
-            <div className="text-center">
-              <img
-                src={mode.image}
-                alt={mode.name}
-                className="w-16 h-16 mx-auto mb-3 object-contain rounded-lg"
-              />
-              <h3 className="font-medium text-sm text-foreground mb-1">
-                {mode.name}
-              </h3>
-              <Badge variant="secondary" className="text-xs">
-                {mode.emissionFactor} kg CO₂/km
-              </Badge>
-            </div>
-          </Card>
-        ))}
-      </div>
+        {/* Transport Mode Selection */}
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-4">
+            Select Your Transport Modes
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {TRANSPORT_MODES.map((mode, index) => (
+              <InteractiveTile
+                key={mode.id}
+                isSelected={data.selectedModes.includes(mode.id)}
+                onClick={() => toggleMode(mode.id)}
+                animationTier={animationTier}
+                className="animate-slide-up"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <div className="text-center">
+                  <div className="w-16 h-16 mx-auto mb-3 rounded-lg overflow-hidden bg-primary/5 group-hover:bg-primary/10 transition-colors duration-200">
+                    <img 
+                      src={mode.icon} 
+                      alt={mode.name}
+                      className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-200"
+                    />
+                  </div>
+                  <h3 className="font-medium text-foreground mb-1">{mode.name}</h3>
+                  <p className="text-xs text-muted-foreground">{mode.description}</p>
+                </div>
+              </InteractiveTile>
+            ))}
+          </div>
+        </Card>
 
       {/* Daily Distance Slider */}
       <Card className="p-6">
@@ -238,6 +248,7 @@ export const TransportQuestion: React.FC<TransportQuestionProps> = ({
           </p>
         </div>
       </Card>
-    </div>
+      </div>
+    </PageTransition>
   );
 };

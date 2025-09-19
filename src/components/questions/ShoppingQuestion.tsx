@@ -4,6 +4,8 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { AnimationState } from '@/types/carbonCalculator';
 import { ShoppingCart, Truck, Store, Leaf } from 'lucide-react';
+import { PageTransition } from '@/components/animations/PageTransition';
+import { InteractiveTile } from '@/components/animations/MicroInteractions';
 
 interface ShoppingQuestionProps {
   source: 'local' | 'quick-commerce' | 'supermarket';
@@ -12,13 +14,13 @@ interface ShoppingQuestionProps {
   onChange: (source: 'local' | 'quick-commerce' | 'supermarket', reusableBags: boolean) => void;
 }
 
-const SHOPPING_OPTIONS = [
+const SHOPPING_SOURCES = [
   {
     id: 'local' as const,
     name: 'Local Vendors / Sabzi Mandi',
     icon: Store,
     description: 'Seasonal, minimal packaging',
-    packaging: 'Minimal',
+    impact: 'Low',
     color: 'text-success',
   },
   {
@@ -26,7 +28,7 @@ const SHOPPING_OPTIONS = [
     name: 'Quick Commerce (Zepto/Blinkit)',
     icon: Truck,
     description: 'Fast delivery, moderate packaging',
-    packaging: 'Medium',
+    impact: 'Medium',
     color: 'text-eco-medium',
   },
   {
@@ -34,7 +36,7 @@ const SHOPPING_OPTIONS = [
     name: 'Large Supermarkets',
     icon: ShoppingCart,
     description: 'Pre-packaged goods',
-    packaging: 'High',
+    impact: 'High',
     color: 'text-eco-high',
   },
 ];
@@ -45,7 +47,7 @@ export const ShoppingQuestion: React.FC<ShoppingQuestionProps> = ({
   animationTier,
   onChange,
 }) => {
-  const selectedOption = SHOPPING_OPTIONS.find(opt => opt.id === source);
+  const selectedOption = SHOPPING_SOURCES.find(opt => opt.id === source);
   
   const getTierClassName = (tier: AnimationState) => {
     switch (tier) {
@@ -61,7 +63,8 @@ export const ShoppingQuestion: React.FC<ShoppingQuestionProps> = ({
   };
 
   return (
-    <div className="space-y-6 slide-up">
+    <PageTransition backgroundType="shopping" animationTier={animationTier}>
+      <div className="space-y-6">
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-foreground mb-2">
           Grocery Shopping Style
@@ -72,38 +75,39 @@ export const ShoppingQuestion: React.FC<ShoppingQuestionProps> = ({
       </div>
 
       {/* Shopping Source Options */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {SHOPPING_OPTIONS.map((option) => {
-          const Icon = option.icon;
-          return (
-            <Card
-              key={option.id}
-              className={`transport-tile ${
-                source === option.id ? 'selected' : ''
-              }`}
-              onClick={() => onChange(option.id, reusableBags)}
-            >
-              <div className="text-center">
-                <div className="w-16 h-16 mx-auto mb-3 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <Icon className={`w-8 h-8 ${option.color}`} />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {SHOPPING_SOURCES.map((shoppingSource, index) => {
+            const Icon = shoppingSource.icon;
+            return (
+              <InteractiveTile
+                key={shoppingSource.id}
+                isSelected={source === shoppingSource.id}
+                onClick={() => onChange(shoppingSource.id, reusableBags)}
+                animationTier={animationTier}
+                className="animate-slide-up"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <div className="text-center">
+                  <div className="w-12 h-12 mx-auto mb-3 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-200">
+                    <Icon className={`w-6 h-6 ${shoppingSource.color} group-hover:scale-110 transition-transform duration-200`} />
+                  </div>
+                  <h3 className="font-medium text-foreground mb-2">
+                    {shoppingSource.name}
+                  </h3>
+                  <p className="text-xs text-muted-foreground mb-2">
+                    {shoppingSource.description}
+                  </p>
+                  <Badge 
+                    variant="secondary" 
+                    className={`text-xs ${shoppingSource.color}`}
+                  >
+                    {shoppingSource.impact} Impact
+                  </Badge>
                 </div>
-                <h3 className="font-medium text-foreground mb-2">
-                  {option.name}
-                </h3>
-                <p className="text-xs text-muted-foreground mb-2">
-                  {option.description}
-                </p>
-                <Badge 
-                  variant="secondary" 
-                  className={`text-xs ${option.color}`}
-                >
-                  {option.packaging} Packaging
-                </Badge>
-              </div>
-            </Card>
-          );
-        })}
-      </div>
+              </InteractiveTile>
+            );
+          })}
+        </div>
 
       {/* Reusable Bags Toggle */}
       <Card className="p-6">
@@ -144,9 +148,9 @@ export const ShoppingQuestion: React.FC<ShoppingQuestionProps> = ({
           
           <div className="grid grid-cols-2 gap-4 mt-4">
             <div className="bg-card/50 p-3 rounded-lg">
-              <p className="text-xs text-muted-foreground">Packaging Level</p>
+              <p className="text-xs text-muted-foreground">Impact Level</p>
               <p className={`text-lg font-semibold ${selectedOption?.color}`}>
-                {selectedOption?.packaging}
+                {selectedOption?.impact}
               </p>
             </div>
             <div className="bg-card/50 p-3 rounded-lg">
@@ -202,6 +206,7 @@ export const ShoppingQuestion: React.FC<ShoppingQuestionProps> = ({
           </p>
         </div>
       </Card>
-    </div>
+      </div>
+    </PageTransition>
   );
 };

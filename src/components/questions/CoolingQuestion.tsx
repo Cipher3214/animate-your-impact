@@ -3,6 +3,8 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { AnimationState } from '@/types/carbonCalculator';
 import { Fan, Wind, Snowflake, Thermometer } from 'lucide-react';
+import { PageTransition } from '@/components/animations/PageTransition';
+import { InteractiveTile } from '@/components/animations/MicroInteractions';
 
 interface CoolingQuestionProps {
   coolingType: 'fan' | 'cooler' | 'ac-few' | 'ac-most';
@@ -66,7 +68,8 @@ export const CoolingQuestion: React.FC<CoolingQuestionProps> = ({
   };
 
   return (
-    <div className="space-y-6 slide-up">
+    <PageTransition backgroundType="cooling" animationTier={animationTier}>
+      <div className="space-y-6">
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-foreground mb-2">
           Summer Cooling Preference
@@ -78,19 +81,20 @@ export const CoolingQuestion: React.FC<CoolingQuestionProps> = ({
 
       {/* Cooling Options */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {COOLING_OPTIONS.map((option) => {
+        {COOLING_OPTIONS.map((option, index) => {
           const Icon = option.icon;
           return (
-            <Card
+            <InteractiveTile
               key={option.id}
-              className={`transport-tile ${
-                coolingType === option.id ? 'selected' : ''
-              }`}
+              isSelected={coolingType === option.id}
               onClick={() => onChange(option.id)}
+              animationTier={animationTier}
+              className="animate-slide-up"
+              style={{ animationDelay: `${index * 0.1}s` }}
             >
               <div className="text-center">
-                <div className="w-16 h-16 mx-auto mb-3 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <Icon className={`w-8 h-8 ${option.color}`} />
+                <div className="w-16 h-16 mx-auto mb-3 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-200">
+                  <Icon className={`w-8 h-8 ${option.color} group-hover:scale-110 transition-transform duration-200`} />
                 </div>
                 <h3 className="font-medium text-foreground mb-2">
                   {option.name}
@@ -105,7 +109,7 @@ export const CoolingQuestion: React.FC<CoolingQuestionProps> = ({
                   {option.consumption} Energy
                 </Badge>
               </div>
-            </Card>
+            </InteractiveTile>
           );
         })}
       </div>
@@ -175,6 +179,7 @@ export const CoolingQuestion: React.FC<CoolingQuestionProps> = ({
           </p>
         </div>
       </Card>
-    </div>
+      </div>
+    </PageTransition>
   );
 };
